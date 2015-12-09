@@ -172,6 +172,7 @@ options:
               signature of a GPG signed commit. This requires C(git) version>=2.1.0
               to be installed. The commit MUST be signed and the public key MUST
               be trusted in the GPG trustdb.
+
     clean_untracked:
         required: false
         default: "no"
@@ -179,6 +180,7 @@ options:
         version_added: "2.1"
         description:
             - if C(eyes), remove all the files and directories
+
     clean_ignored:
         required: false
         default: "no"
@@ -655,6 +657,11 @@ def verify_commit_sign(git_path, module, dest, version):
     if rc != 0:
         module.fail_json(msg='Failed to verify GPG signature of commit/tag "%s"' % version)
     return (rc, out, err)
+def clean_working_dir(dest,clean_untracked,clean_ignored):
+    clean_untracked=clean_untracked
+    clean_ignored=clean_ignored
+    print clean_untracked
+    print clean_ignored
 
 # ===========================================
 
@@ -662,7 +669,7 @@ def main():
     module = AnsibleModule(
         argument_spec = dict(
             dest=dict(),
-            repo=dict(required=True, aliases=['name']),
+            repo=dict(required=False, aliases=['name']),
             version=dict(default='HEAD'),
             remote=dict(default='origin'),
             refspec=dict(default=None),
@@ -679,6 +686,8 @@ def main():
             bare=dict(default='no', type='bool'),
             recursive=dict(default='yes', type='bool'),
             track_submodules=dict(default='no', type='bool'),
+            clean_untracked=dict(default='no',type='bool', required=False),
+            clean_ignored=dict(default='no',type='bool', required=False),
         ),
         supports_check_mode=True
     )
@@ -700,6 +709,10 @@ def main():
     ssh_opts  = module.params['ssh_opts']
 
     gitconfig = None
+    if clean_untracked or clean_ignore:
+        print "ok"
+        module.exit_json(changed=changed, before=before, after=after)
+
     if not dest and allow_clone:
         module.fail_json(msg="the destination directory must be specified unless clone=no")
     elif dest:
