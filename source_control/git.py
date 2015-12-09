@@ -172,6 +172,21 @@ options:
               signature of a GPG signed commit. This requires C(git) version>=2.1.0
               to be installed. The commit MUST be signed and the public key MUST
               be trusted in the GPG trustdb.
+    clean_untracked:
+        required: false
+        default: "no"
+        choise: ["yes, "no"]
+        version_added: "2.1"
+        description:
+            - if C(eyes), remove all the files and directories
+    clean_ignored:
+        required: false
+        default: "no"
+        choise: ["yes, "no"]
+        version_added: "2.1"
+        description:
+            - if C(eyes), remove all the files and directories that are ignored
+
 
 requirements:
     - git (the command line tool)
